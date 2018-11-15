@@ -25,7 +25,9 @@
   // TODO: maybe throttle this?
   function setState() {
     return new Promise(resolve => {
-      chrome.storage.sync.set({state: state_}, result => resolve());
+      chrome.storage.sync.set({state: state_}, result => {
+        chrome.runtime.sendMessage({updateCode: "true"}, (response) => resolve());
+      });
     });
   }
 

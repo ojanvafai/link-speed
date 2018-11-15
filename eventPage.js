@@ -27,5 +27,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.getCode == "code") {
     sendCode(sendResponse);
     return true;
+  } else if (request.updateCode == true) {
+    code_ = null;
   }
 });
