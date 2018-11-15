@@ -1,9 +1,18 @@
-
 chrome.runtime.sendMessage({getCode: "code"}, (response) => {
   console.log(response.code);
 });
 
 (function() {
+  function getSiteSpeed() {
+    return new Promise(resolve => resolve("slow"));
+  }
+
+  async function updateAnnotation(state, a) {
+    const speed = await getSiteSpeed(a.href)
+    console.log(state + " : " + a.href + " : " + speed);
+//    window.updatingLink(state, a, speed);
+  }
+
   const mutationObserver = new MutationObserver((mutationList) => {
     mutationList.forEach((mutation) => {
       switch(mutation.type) {
@@ -11,16 +20,16 @@ chrome.runtime.sendMessage({getCode: "code"}, (response) => {
         for (let newNode of mutation.addedNodes) {
           if (newNode.nodeName != "A")
             continue;
-          window.updatingLink("added", newNode);
+          updateAnnotation("added", newNode);
         }
         for (let newNode of mutation.removedNodes) {
           if (newNode.nodeName != "A")
             continue;
-          window.updatingLink("removed", newNode);
+          updateAnnotation("removed", newNode);
         }
         break;
       case 'attributes':
-        window.updatingLink("updated", mutation.target);
+        updateAnnotation("updated", mutation.target);
         break;
       default:
         throw "unhandled mutation of type " + mutation.type;
