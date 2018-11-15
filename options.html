@@ -1,6 +1,23 @@
+<style>
+  textarea {
+  font-size:1em;
+  font-family: "Courier New", Courier, monospace
+  }
+</style>
 <body>
   <h1>Link Speed options</h1>
-  <div id="content"></div>
+  <div id="content">
+    <fieldset id="fieldset">
+      <div>
+        <input type="radio" id="log" name="mode">
+        <label for="log">Log mutation</label>
+      </div>
+      <div>
+        <input type="radio" id="eval" name="mode">
+        <label for="eval">Eval</label>
+        <div><textarea id="textarea" rows="15" style="width: 100%"></textarea></div>
+      </div>
+    </fieldset>
+  </div>
 </body>
-<script src="pauser.js"></script>
 <script src="options.js"></script>

@@ -1,3 +1,23 @@
+(function() {
+  document.getElementById("fieldset").addEventListener("change", (e) => {
+    switch(e.target.id) {
+    case 'log':
+      window.updatingLink = (state, a) => {
+        console.log("state: " + state);
+        console.log(a);
+      }
+      break;
+    case 'eval':
+    case 'textarea':
+      eval(document.getElementById("textarea").value);
+      break;
+    default:
+      throw "invalid form element item id " + e.target.id;
+    }
+  });
+})();
+
+/*
 function save(key) {
   if (timer)
     clearTimeout(timer);
@@ -20,3 +40,4 @@ chrome.storage.sync.get({
   };
   content.append(textarea);
 });
+*/
