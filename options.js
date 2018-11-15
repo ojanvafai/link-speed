@@ -44,6 +44,20 @@
 
   document.getElementById(state_.selected).checked = true;
 
+  let textareaId = 'textarea';
+  let timer_;
+  document.getElementById(textareaId).onkeydown = (e) => {
+    if (timer_)
+      clearTimeout(timer_);
+
+    timer_ = setTimeout(function() {
+      timer_ = null;
+      var data = {};
+      data[key] = document.getElementById(textareaId).value;
+      chrome.storage.sync.set(data, function() {});
+    }, 100);
+  };
+
   document.getElementById("fieldset").addEventListener("change", async (e) => {
     state_.selected = e.target.id;
     if (e.target.id == "eval")
