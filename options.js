@@ -27,6 +27,15 @@
   // TODO: should this be fire & forget, or not?
   // TODO: maybe throttle this?
   function setState() {
+    if (state_.selected == "eval")
+      state_.eval = textarea_.value;
+    else if (state_.selected == 'log')
+      state_.eval = CONSOLE_LOG;
+    else if (state_.selected == 'highlight')
+      state_.eval = HIGHLIGHT;
+    else if (state_.selected == 'font_color')
+      state_.eval = FONT_COLOR;
+
     return new Promise(resolve => {
       chrome.storage.sync.set({state: state_}, result => {
         chrome.runtime.sendMessage({updateCode: "true"}, (response) => resolve());
@@ -44,30 +53,33 @@
 
   document.getElementById(state_.selected).checked = true;
 
-  let textareaId = 'textarea';
+  let textarea_ = document.getElementById('textarea');
+
+  if (state_.selected == 'eval')
+    textarea_.value = state_.eval;
+
   let timer_;
-  document.getElementById(textareaId).onkeydown = (e) => {
+  textarea_.onkeydown = (e) => {
     if (timer_)
       clearTimeout(timer_);
 
     timer_ = setTimeout(function() {
       timer_ = null;
-      var data = {};
-      data[key] = document.getElementById(textareaId).value;
-      chrome.storage.sync.set(data, function() {});
+      setState();
     }, 100);
   };
 
-  document.getElementById("fieldset").addEventListener("change", async (e) => {
-    state_.selected = e.target.id;
-    if (e.target.id == "eval")
-      state_.eval = document.getElementById("textarea").value;
-    else if (state_.selected == 'log')
-      state_.eval = CONSOLE_LOG;
-    else if (state_.selected == 'highlight')
-      state_.eval = HIGHLIGHT;
-    else if (state_.selected == 'font_color')
-      state_.eval = FONT_COLOR;
+  textarea_.onfocus = (e) => {
+    document.getElementById('eval').checked = true;
+    selectedChanged('eval');
+  }
+
+  async function selectedChanged(selected) {
+    state_.selected = selected;
     await setState();
+  }
+
+  document.getElementById("fieldset").addEventListener("change", (e) => {
+    selectedChanged(e.target.id);
   });
 })();
