@@ -12,7 +12,7 @@
     new_el.style.backgroundColor = "#ff0000";
     new_el.style.opacity = 0.6;
 
-    el.parentElement.appendChild(new_el);
+    document.documentElement.appendChild(new_el);
   `
 
   function getState() {
@@ -32,7 +32,7 @@
   }
 
   let state_ = await getState();
-  if (!("selected" in state_)) {
+  if (!state_) {
     state_ = {
       selected: "log",
       eval: CONSOLE_LOG,

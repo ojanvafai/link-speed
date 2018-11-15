@@ -1,6 +1,5 @@
 chrome.runtime.sendMessage({getCode: "code"}, (response) => {
-  let foo = eval(response.code);
-  foo('state', 'link', 'speed');
+  window.updatingLink = eval(response.code);
 });
 
 // DON'T CHECK IN
