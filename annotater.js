@@ -76,7 +76,6 @@ const API_KEY="AIzaSyCTBTG6ouekwiL_z11bvIsKuZ_CkuC8qT0";
       return; 
 
     const speed = await getSiteSpeed(a.href)
-    console.log(state + " : " + a.href + " : " + JSON.stringify(speed));
     let updatingLink = await getUpdatingLinkFunction();
     updatingLink(state, a, speed);
   }

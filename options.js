@@ -1,5 +1,5 @@
 (async function() {
-  const CONSOLE_LOG = `console.log(link);`;
+  const CONSOLE_LOG = `console.log(state, link, speed);`;
   const HIGHLIGHT = `
     const new_el = document.createElement("div")
     new_el.style.width = "100%";
@@ -22,6 +22,31 @@
   const FONT_COLOR = `
     link.style.color = "red";
   `
+  const WARNING_ICON = `
+if (speed.fcp90 < 3000)
+  return;
+
+link.style.whiteSpace = 'nowrap';
+
+let lastTextNode = link;
+while (lastTextNode && lastTextNode.nodeType != Node.TEXT_NODE) {
+  lastTextNode = lastTextNode.lastChild;
+}
+
+let wrapper = document.createElement('span');
+wrapper.style.whiteSpace = 'nowrap';
+
+let after = document.createElement('span');
+after.style.cssText = \`
+  font-weight: bold;
+  color: red;
+  position: absolute;
+\`;
+after.textContent = '\\u26A0';
+
+wrapper.append(after); 
+link.append(wrapper);
+`;
 
   function getState() {
     return new Promise(resolve => {
@@ -40,6 +65,8 @@
       state_.eval = HIGHLIGHT;
     else if (state_.selected == 'font_color')
       state_.eval = FONT_COLOR;
+    else if (state_.selected == 'warning_icon')
+      state_.eval = WARNING_ICON;
 
     return new Promise(resolve => {
       chrome.storage.sync.set({state: state_}, result => {
