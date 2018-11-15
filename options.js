@@ -1,30 +1,9 @@
 (async function() {
-  function applyState() {
-    document.getElementById("textarea").value = state.eval;
-    switch(state.selected) {
-    case 'log':
-      window.updatingLink = (state, a) => {
-        console.log("state: " + state);
-        console.log(a);
-      }
-      break;
-    case 'highlight':
-      window.updatingLink = (state, a) => {
-        console.log("highlight: state: " + state);
-        console.log(a);
-      }
-      break;
-    case 'eval':
-      eval(state.eval);
-      break;
-    default:
-      throw "invalid selected state " + state.selected;
-    }
-  }
+  const CONSOLE_LOG = `console.log(link);`;
 
-  async function getState() {
+  function getState() {
     return new Promise(resolve => {
-      chrome.storage.sync.get(['state'], result => resolve(result));
+      chrome.storage.sync.get({state: null}, result => resolve(result.state));
     });
   }
 
@@ -32,27 +11,26 @@
   // TODO: maybe throttle this?
   function setState() {
     return new Promise(resolve => {
-      chrome.storage.sync.set(['state'], state);
+      chrome.storage.sync.set({state: state_}, result => resolve());
     });
   }
 
-  let state = await getState();
-  if (!("selected" in state) || !("eval" in state)) {
-    state = {
+  let state_ = await getState();
+  if (!("selected" in state_)) {
+    state_ = {
       selected: "log",
-      eval: "",
+      eval: CONSOLE_LOG,
     }
   }
 
-  applyState();
+  document.getElementById(state_.selected).checked = true;
 
-
-  document.getElementById("fieldset").addEventListener("change", (e) => {
-    if (e.target.id == "textarea")
-      state.eval = document.getElementById("textarea").value;
-    else
-      state.selected = e.target.id;
-
-    applyState();
+  document.getElementById("fieldset").addEventListener("change", async (e) => {
+    state_.selected = e.target.id;
+    if (e.target.id == "eval")
+      state_.eval = document.getElementById("textarea").value;
+    else if (state_.selected == 'log')
+      state_.eval = CONSOLE_LOG;
+    await setState();
   });
 })();
