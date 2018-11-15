@@ -30,10 +30,21 @@ const API_KEY="AIzaSyCTBTG6ouekwiL_z11bvIsKuZ_CkuC8qT0";
 
   async function getSiteSpeed(pageUrl) {
     if (fakeData) {
-      return {
-        fcp90: Math.round(Math.random()*8000),
-        fcp95: Math.round(Math.random()*500),
-        urlSpecific: !!Math.round(Math.random())
+      pageUrl = pageUrl.replace(/\/$/, "");
+      pageUrl = pageUrl.replace(/(^\w+:|^)\/\//, '');
+
+      if (SLOW_ORIGINS.has(pageUrl)) {
+        return {
+          fcp90: 8000,
+          fcp95: 9000,
+          urlSpecific: false,
+        }
+      } else {
+        return {
+          fcp90: 1000,
+          fcp95: 2000,
+          urlSpecific: false,
+        }
       }
     }
     let api = 'https://www.googleapis.com/pagespeedonline/v5/runPagespeed';
@@ -73,10 +84,9 @@ const API_KEY="AIzaSyCTBTG6ouekwiL_z11bvIsKuZ_CkuC8qT0";
 
     // TODO: Make updates and removes work.
     if (state != 'added')
-      return; 
+      return;
 
     const speed = await getSiteSpeed(a.href)
-    console.log(state + " : " + a.href + " : " + JSON.stringify(speed));
     let updatingLink = await getUpdatingLinkFunction();
     updatingLink(state, a, speed);
   }
