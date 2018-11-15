@@ -1,4 +1,6 @@
 
 chrome.runtime.sendMessage({getCode: "code"}, (response) => {
-  console.log(response.code);
+  let foo = eval(response.code);
+  console.log(foo);
+  foo('bar');
 });

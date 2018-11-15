@@ -1,28 +1,31 @@
 let code_ = '';
 
-function sendCode() {
+function getState() {
+  return new Promise(resolve => {
+    chrome.storage.sync.get({state: null}, result => resolve(result.state));
+  });
+}
+
+async function sendCode(callback) {
   if (!code_) {
-    chrome.storage.sync.get({
-      custom_callback_code: null,
-    }, (items) => {
-      let code = items.custom_callback_code;
-      if (!code)
-        console.log('no annotation code');
-      console.log('code:', code);
-      code_ = code;
-    });    
+    let state = await getState();
+    if (!state) {
+      console.log('no annotation code');
+      return;
+    }
+ 
+    code_ = `(state, link, speed) => {
+      ${state.eval}
+    }`;
   }
 
-  sendResponse({code: code_});
+  callback({code: code_});
 }
 
 // TODO: Need to fix race condition of not having code_ before this message arrives.
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  console.log(sender.tab ?
-              "from a content script:" + sender.tab.url :
-              "from the extension");
   if (request.getCode == "code") {
-    sendCode();
+    sendCode(sendResponse);
     return true;
   }
 });
