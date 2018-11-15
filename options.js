@@ -1,6 +1,7 @@
 (async function() {
   const CONSOLE_LOG = `console.log(link);`;
   const HIGHLIGHT = `
+    if (speed.fcp90 < 3000) return;
     const new_el = document.createElement("div")
     new_el.style.width = "100%";
     new_el.style.height = "100%";
@@ -19,7 +20,9 @@
     if (link.offsetParent)
       link.offsetParent.appendChild(new_el);
   `
+
   const FONT_COLOR = `
+    if (speed.fcp90 < 3000) return;
     link.style.color = "red";
   `
 
