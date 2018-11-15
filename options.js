@@ -14,6 +14,9 @@
 
     document.documentElement.appendChild(new_el);
   `
+  const FONT_COLOR = `
+    link.style.color = "red";
+  `
 
   function getState() {
     return new Promise(resolve => {
@@ -49,6 +52,8 @@
       state_.eval = CONSOLE_LOG;
     else if (state_.selected == 'highlight')
       state_.eval = HIGHLIGHT;
+    else if (state_.selected == 'font_color')
+      state_.eval = FONT_COLOR;
     await setState();
   });
 })();
