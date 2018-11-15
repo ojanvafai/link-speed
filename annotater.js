@@ -1,6 +1,5 @@
 chrome.runtime.sendMessage({getCode: "code"}, (response) => {
-  let foo = eval(response.code);
-  foo('state', 'link', 'speed');
+  window.updatingLink = eval(response.code);
 });
 
 // DON'T CHECK IN
@@ -24,7 +23,7 @@ const API_KEY="AIzaSyCTBTG6ouekwiL_z11bvIsKuZ_CkuC8qT0";
       category: "best-practices", // can't turn lighthouse off - use cheapest
       strategy: "desktop",
       fields: "analysisUTCTimestamp%2CcaptchaResult%2Cid%2Ckind%2CloadingExperience%2CoriginLoadingExperience%2Cversion",
-      key: API_KEY    
+      key: API_KEY
     };
     let first = true;
     for (key in parameters) {
@@ -47,7 +46,7 @@ const API_KEY="AIzaSyCTBTG6ouekwiL_z11bvIsKuZ_CkuC8qT0";
   async function updateAnnotation(state, a) {
     const speed = await getSiteSpeed(a.href)
     console.log(state + " : " + a.href + " : " + speed);
-//    window.updatingLink(state, a, speed);
+    window.updatingLink(state, a, speed);
   }
 
   const mutationObserver = new MutationObserver((mutationList) => {
