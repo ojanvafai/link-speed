@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<title>Test Links</title>
+<script src="watch_links.js"></script>
+<script>
+window.updatingLink = ((state, a) => {
+    console.log("state: " + state);
+    console.log(a);
+});
+</script>
+</head>
+<body>
+<div><a href="www.google.com">Initial</a></div>
+<div><a id="updated" href="www.google.com">Updated</a></div>
+<div><a id="removed" href="www.google.com">Removed</a></div>
+
+<script>
+document.getElementById("updated").href = "www.test.com";
+
+const removed = document.getElementById("removed");
+removed.parentNode.removeChild(removed);
+
+const inserted = document.createElement("a");
+inserted.href = "www.foo.com";
+inserted.textContent = "Dynamically Inserted";
+document.body.appendChild(inserted);
+</script>
+</body>
+</html>
