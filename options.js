@@ -80,6 +80,7 @@
   }
 
   document.getElementById("fieldset").addEventListener("change", (e) => {
-    selectedChanged(e.target.id);
+    let selected = e.target.id == 'textarea' ? 'eval' : e.target.id;
+    selectedChanged(selected);
   });
 })();
