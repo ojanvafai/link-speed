@@ -1,5 +1,5 @@
 chrome.runtime.sendMessage({getCode: "code"}, (response) => {
-  let foo = eval(response.code);
+  let foo = eval("window.updatingLink = function(state, link, speed) {" + response.code + "}");
   console.log(foo);
   foo('bar');
 });
@@ -12,7 +12,7 @@ chrome.runtime.sendMessage({getCode: "code"}, (response) => {
   async function updateAnnotation(state, a) {
     const speed = await getSiteSpeed(a.href)
     console.log(state + " : " + a.href + " : " + speed);
-//    window.updatingLink(state, a, speed);
+    window.updatingLink(state, a, speed);
   }
 
   const mutationObserver = new MutationObserver((mutationList) => {
