@@ -3,9 +3,45 @@ chrome.runtime.sendMessage({getCode: "code"}, (response) => {
   foo('state', 'link', 'speed');
 });
 
+// DON'T CHECK IN
+const API_KEY="AIzaSyCTBTG6ouekwiL_z11bvIsKuZ_CkuC8qT0";
+
 (function() {
-  function getSiteSpeed() {
-    return new Promise(resolve => resolve("slow"));
+
+  async function wait(ms) {
+    return new Promise(resolve => {
+      setTimeout(resolve, ms);
+    });
+  }
+
+  // Throttle PSI requests
+  let psiCalls = 0;
+
+  async function getSiteSpeed(pageUrl) {
+    let api = 'https://www.googleapis.com/pagespeedonline/v5/runPagespeed';
+    const parameters = {
+      url: encodeURIComponent('https://en.wikipedia.org/wiki/Speed'),
+      category: "best-practices", // can't turn lighthouse off - use cheapest
+      strategy: "desktop",
+      fields: "analysisUTCTimestamp%2CcaptchaResult%2Cid%2Ckind%2CloadingExperience%2CoriginLoadingExperience%2Cversion",
+      key: API_KEY    
+    };
+    let first = true;
+    for (key in parameters) {
+      api += first ? "?" : "&";
+      api += `${key}=${parameters[key]}`;
+      first = false;
+    }
+    psiCalls++;
+    await wait(2000 * (psiCalls-1));
+    const response = await fetch(api);
+    psiCalls--;
+    const json = await response.json();
+    if ('loadingExperience' in json)
+      return json.loadingExperience.overall_category.toLowerCase();
+    if ('originLoadingExperience' in json)
+      return json.originLoadingExperience.overall_category.toLowerCase();
+    return "";
   }
 
   async function updateAnnotation(state, a) {
