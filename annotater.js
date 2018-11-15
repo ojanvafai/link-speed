@@ -1,6 +1,5 @@
 chrome.runtime.sendMessage({getCode: "code"}, (response) => {
-  let foo = eval(response.code);
-  foo('state', 'link', 'speed');
+  window.updatingLink = eval(response.code);
 });
 
 // TODO: Don't check this in (and cycle the key).
@@ -61,7 +60,7 @@ const API_KEY="AIzaSyCTBTG6ouekwiL_z11bvIsKuZ_CkuC8qT0";
   async function updateAnnotation(state, a) {
     const speed = await getSiteSpeed(a.href)
     console.log(state + " : " + a.href + " : " + JSON.stringify(speed));
-//    window.updatingLink(state, a, speed);
+    window.updatingLink(state, a, speed);
   }
 
   const mutationObserver = new MutationObserver((mutationList) => {

@@ -1,5 +1,22 @@
 (async function() {
   const CONSOLE_LOG = `console.log(link);`;
+  const HIGHLIGHT = `
+    const r = link.getBoundingClientRect()
+    const new_el = document.createElement("div")
+    new_el.style.position = "absolute";
+    new_el.style.top = r.top + "px";
+    new_el.style.height = (r.bottom - r.top) + "px";
+    new_el.style.left = r.left + "px";
+    new_el.style.width = (r.right - r.left) + "px";
+
+    new_el.style.backgroundColor = "#ff0000";
+    new_el.style.opacity = 0.6;
+
+    document.documentElement.appendChild(new_el);
+  `
+  const FONT_COLOR = `
+    link.style.color = "red";
+  `
 
   function getState() {
     return new Promise(resolve => {
@@ -18,7 +35,7 @@
   }
 
   let state_ = await getState();
-  if (!("selected" in state_)) {
+  if (!state_) {
     state_ = {
       selected: "log",
       eval: CONSOLE_LOG,
@@ -27,12 +44,30 @@
 
   document.getElementById(state_.selected).checked = true;
 
+  let textareaId = 'textarea';
+  let timer_;
+  document.getElementById(textareaId).onkeydown = (e) => {
+    if (timer_)
+      clearTimeout(timer_);
+
+    timer_ = setTimeout(function() {
+      timer_ = null;
+      var data = {};
+      data[key] = document.getElementById(textareaId).value;
+      chrome.storage.sync.set(data, function() {});
+    }, 100);
+  };
+
   document.getElementById("fieldset").addEventListener("change", async (e) => {
     state_.selected = e.target.id;
     if (e.target.id == "eval")
       state_.eval = document.getElementById("textarea").value;
     else if (state_.selected == 'log')
       state_.eval = CONSOLE_LOG;
+    else if (state_.selected == 'highlight')
+      state_.eval = HIGHLIGHT;
+    else if (state_.selected == 'font_color')
+      state_.eval = FONT_COLOR;
     await setState();
   });
 })();

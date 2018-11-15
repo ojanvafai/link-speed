@@ -13,7 +13,7 @@ async function sendCode(callback) {
       console.log('no annotation code');
       return;
     }
- 
+
     code_ = `(state, link, speed) => {
       ${state.eval}
     }`;
