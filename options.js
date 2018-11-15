@@ -1,18 +1,23 @@
 (async function() {
   const CONSOLE_LOG = `console.log(link);`;
   const HIGHLIGHT = `
-    const r = link.getBoundingClientRect()
     const new_el = document.createElement("div")
+    new_el.style.width = "100%";
+    new_el.style.height = "100%";
+
+
     new_el.style.position = "absolute";
-    new_el.style.top = r.top + "px";
-    new_el.style.height = (r.bottom - r.top) + "px";
-    new_el.style.left = r.left + "px";
-    new_el.style.width = (r.right - r.left) + "px";
+    new_el.style.top = link.offsetTop + "px";
+    new_el.style.height = link.offsetHeight + "px";
+    new_el.style.left = link.offsetLeft + "px";
+    new_el.style.width = link.offsetWidth + "px";
+    new_el.style.pointerEvents = "none";
 
     new_el.style.backgroundColor = "#ff0000";
     new_el.style.opacity = 0.6;
 
-    document.documentElement.appendChild(new_el);
+    if (link.offsetParent)
+      link.offsetParent.appendChild(new_el);
   `
   const FONT_COLOR = `
     link.style.color = "red";
