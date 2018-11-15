@@ -67,6 +67,10 @@ const API_KEY="AIzaSyCTBTG6ouekwiL_z11bvIsKuZ_CkuC8qT0";
   }
 
   async function updateAnnotation(state, a) {
+    // Ignore #foo hrefs as they just scroll the page.
+    if (location.origin == a.origin && location.pathname == a.pathname)
+      return;
+
     const speed = await getSiteSpeed(a.href)
     console.log(state + " : " + a.href + " : " + JSON.stringify(speed));
     let updatingLink = await getUpdatingLinkFunction();
