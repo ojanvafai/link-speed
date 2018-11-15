@@ -3,7 +3,7 @@ chrome.runtime.sendMessage({getCode: "code"}, (response) => {
   foo('state', 'link', 'speed');
 });
 
-// DON'T CHECK IN
+// TODO: Don't check this in (and cycle the key).
 const API_KEY="AIzaSyCTBTG6ouekwiL_z11bvIsKuZ_CkuC8qT0";
 
 (function() {
@@ -17,14 +17,24 @@ const API_KEY="AIzaSyCTBTG6ouekwiL_z11bvIsKuZ_CkuC8qT0";
   // Throttle PSI requests
   let psiCalls = 0;
 
+  // Stub out for testing
+  const fakeData = true;
+
   async function getSiteSpeed(pageUrl) {
+    if (fakeData) {
+      return {
+        fcp90: Math.round(Math.random()*8000),
+        fcp95: Math.round(Math.random()*500),
+        urlSpecific: !!Math.round(Math.random())
+      }
+    }
     let api = 'https://www.googleapis.com/pagespeedonline/v5/runPagespeed';
     const parameters = {
       url: encodeURIComponent('https://en.wikipedia.org/wiki/Speed'),
       category: "best-practices", // can't turn lighthouse off - use cheapest
       strategy: "desktop",
       fields: "analysisUTCTimestamp%2CcaptchaResult%2Cid%2Ckind%2CloadingExperience%2CoriginLoadingExperience%2Cversion",
-      key: API_KEY    
+      key: API_KEY
     };
     let first = true;
     for (key in parameters) {
@@ -33,20 +43,24 @@ const API_KEY="AIzaSyCTBTG6ouekwiL_z11bvIsKuZ_CkuC8qT0";
       first = false;
     }
     psiCalls++;
+    // Quota is 60 queries per 100 seconds per user :-(
     await wait(2000 * (psiCalls-1));
     const response = await fetch(api);
     psiCalls--;
     const json = await response.json();
-    if ('loadingExperience' in json)
-      return json.loadingExperience.overall_category.toLowerCase();
-    if ('originLoadingExperience' in json)
-      return json.originLoadingExperience.overall_category.toLowerCase();
-    return "";
+    let crux = json.loadingExperience || json.originLoadingExperience;
+    if (!crux)
+      return {};
+    return {
+      fcp90: crux.metrics.FIRST_CONTENTFUL_PAINT_MS.percentile,
+      fid95: crux.metrics.FIRST_INPUT_DELAY_MS.percentile,
+      urlSpecific: 'loadingExperience' in json,
+    };
   }
 
   async function updateAnnotation(state, a) {
     const speed = await getSiteSpeed(a.href)
-    console.log(state + " : " + a.href + " : " + speed);
+    console.log(state + " : " + a.href + " : " + JSON.stringify(speed));
 //    window.updatingLink(state, a, speed);
   }
 
