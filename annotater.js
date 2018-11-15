@@ -71,6 +71,10 @@ const API_KEY="AIzaSyCTBTG6ouekwiL_z11bvIsKuZ_CkuC8qT0";
     if (location.origin == a.origin && location.pathname == a.pathname)
       return;
 
+    // TODO: Make updates and removes work.
+    if (state != 'added')
+      return; 
+
     const speed = await getSiteSpeed(a.href)
     console.log(state + " : " + a.href + " : " + JSON.stringify(speed));
     let updatingLink = await getUpdatingLinkFunction();
