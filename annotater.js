@@ -30,9 +30,15 @@ const API_KEY="AIzaSyCTBTG6ouekwiL_z11bvIsKuZ_CkuC8qT0";
 
   async function getSiteSpeed(pageUrl) {
     if (fakeData) {
-      let pathArray = pageUrl.split('/');
-      let protocol = pathArray[0];
-      let origin = pathArray[2];
+      let origin;
+      try {
+        origin = new URL(pageUrl).host;
+      } catch(e) {
+        let pathArray = pageUrl.split('/');
+        let protocol = pathArray[0];
+        origin = pathArray[2];
+      }
+
       console.log(origin);
 
       if (SLOW_ORIGINS.has(origin)) {
